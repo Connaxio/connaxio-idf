@@ -29,7 +29,7 @@ public:
     uint8_t getBits();
 
 private:
-    uint8_t m_address = 0x48;
+    uint8_t m_address = 0x49;
     static const uint8_t m_cmd_noop;
     static const uint8_t m_cmd_devid;
     static const uint8_t m_cmd_sync;
