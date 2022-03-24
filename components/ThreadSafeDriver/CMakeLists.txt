@@ -1,4 +1,5 @@
-idf_component_register(SRCS "UARTThreadSafeDriver.cpp" "I2CThreadSafeDriver.cpp"
+idf_component_register(SRCS "UARTThreadSafeDriver.cpp" "I2CThreadSafeDriver.cpp" "OneWireUARTThreadSafeDriver.cpp"
                     INCLUDE_DIRS "include"
-                    REQUIRES driver esp_common esp_adc_cal hal)
+                    REQUIRES driver esp_common
+                    PRIV_REQUIRES hal)
 

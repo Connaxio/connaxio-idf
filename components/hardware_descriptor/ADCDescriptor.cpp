@@ -16,12 +16,13 @@
 
 ADCDescriptor::ADCDescriptor(gpio_num_t t_gpio_pin, adc_bits_width_t t_resolution,
 		adc_atten_t t_attenuation) {
-	adc_unit_t unit = ADCDescriptor::getADCUnit(t_gpio_pin);
-	m_channel = ADCDescriptor::getADCChannel(t_gpio_pin);
 
-	if (unit == ADC_UNIT_MAX || m_channel == ADC_CHANNEL_MAX) {
+	adc_unit_t unit;
+	if (ADCDescriptor::getID(t_gpio_pin, unit, m_channel) != ESP_OK) {
 		assert(0);
 	}
+	ESP_LOGD(LOG_TAG, "ADC IO/UNIT/CHANNEL:\t%i / %i / %i", t_gpio_pin, unit, m_channel);
+
 	adc_set_data_width(unit, t_resolution);
 	if (unit == ADC_UNIT_1) {
 		adc1_config_channel_atten((adc1_channel_t) m_channel, t_attenuation);
@@ -39,7 +40,7 @@ ADCDescriptor::~ADCDescriptor() {
 }
 
 void ADCDescriptor::update() {
-    m_rawValue = -1;
+	m_rawValue = -1;
 	ESP_LOGV(LOG_TAG, "Reading ADC channel: %i", m_channel);
 
 	adc_power_acquire();
@@ -55,50 +56,36 @@ void ADCDescriptor::update() {
 
 }
 
-int ADCDescriptor::getRawValue(){
-    return m_rawValue;
+int ADCDescriptor::getRawValue() {
+	return m_rawValue;
 }
 
-uint32_t ADCDescriptor::getVoltage()
-{
-    return esp_adc_cal_raw_to_voltage(m_rawValue, &m_adc_chars);
+uint32_t ADCDescriptor::getVoltage() {
+	return esp_adc_cal_raw_to_voltage(m_rawValue, &m_adc_chars);
 }
 
-adc_channel_t ADCDescriptor::getADCChannel(gpio_num_t t_gpio_pin) {
-	adc_channel_t channel = ADC_CHANNEL_MAX;
-	gpio_num_t gpio_pin_tmp;
+esp_err_t ADCDescriptor::getID(gpio_num_t io_num, adc_unit_t &unit_out, adc_channel_t &channel_out) {
+	gpio_num_t gpio_pin_tmp = GPIO_NUM_NC;
 
-	if (t_gpio_pin >= GPIO_NUM_32 && t_gpio_pin <= GPIO_NUM_39) {
-		for (uint8_t ch = ADC1_CHANNEL_0; ch < ADC1_CHANNEL_MAX; ++ch) {
-			if ((adc1_pad_get_io_num((adc1_channel_t) ch, &gpio_pin_tmp) == ESP_OK)
-					&& (gpio_pin_tmp == t_gpio_pin)) {
-				channel = (adc_channel_t) ch;
-				break;
-			}
-		}
-
-	} else if (t_gpio_pin == GPIO_NUM_4 || t_gpio_pin == GPIO_NUM_2
-			|| (t_gpio_pin >= GPIO_NUM_12 && t_gpio_pin <= GPIO_NUM_15)) {
-		for (uint8_t ch = ADC2_CHANNEL_0; ch < ADC2_CHANNEL_MAX; ++ch) {
-			if ((adc2_pad_get_io_num((adc2_channel_t) ch, &gpio_pin_tmp) == ESP_OK)
-					&& (gpio_pin_tmp == t_gpio_pin)) {
-				channel = (adc_channel_t) ch;
-				break;
-			}
+	for (uint8_t ch = ADC1_CHANNEL_0; ch < ADC1_CHANNEL_MAX && gpio_pin_tmp != io_num; ++ch) {
+		adc1_pad_get_io_num((adc1_channel_t) ch, &gpio_pin_tmp);
+		if (gpio_pin_tmp == io_num) {
+			channel_out = (adc_channel_t) ch;
+			unit_out = ADC_UNIT_1;
 		}
 	}
-	ESP_LOGD(LOG_TAG, "ADC channel selected: %i.", channel);
-	return channel;
-}
 
-adc_unit_t ADCDescriptor::getADCUnit(gpio_num_t t_gpio_pin) {
-	adc_unit_t unit = ADC_UNIT_MAX;
-
-	if (t_gpio_pin >= GPIO_NUM_32 && t_gpio_pin <= GPIO_NUM_39) {
-		unit = ADC_UNIT_1;
-	} else if (t_gpio_pin == GPIO_NUM_4 || t_gpio_pin == GPIO_NUM_2
-			|| (t_gpio_pin >= GPIO_NUM_12 && t_gpio_pin <= GPIO_NUM_15)) {
-		unit = ADC_UNIT_2;
+	for (uint8_t ch = ADC2_CHANNEL_0; ch < ADC2_CHANNEL_MAX && gpio_pin_tmp != io_num; ++ch) {
+		adc2_pad_get_io_num((adc2_channel_t) ch, &gpio_pin_tmp);
+		if (gpio_pin_tmp == io_num) {
+			channel_out = (adc_channel_t) ch;
+			unit_out = ADC_UNIT_2;
+		}
 	}
-	return unit;
+
+	if (gpio_pin_tmp == io_num) {
+		return ESP_OK;
+	} else {
+		return ESP_FAIL;
+	}
 }

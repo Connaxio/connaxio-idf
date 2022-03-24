@@ -22,15 +22,12 @@ public:
 	int getRawValue();
 	uint32_t getVoltage();
 
-
-	static adc_channel_t getADCChannel(gpio_num_t gpio_pin);
-	static adc_unit_t getADCUnit(gpio_num_t gpio_pin);
+	static esp_err_t getID(gpio_num_t io_num, adc_unit_t &unit_out, adc_channel_t &channel_out);
 
 private:
 	adc_channel_t m_channel;
 	esp_adc_cal_characteristics_t m_adc_chars;
 	int m_rawValue;
-
 
 };
 

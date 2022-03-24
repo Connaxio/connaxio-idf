@@ -37,8 +37,8 @@ private:
 	static SemaphoreHandle_t m_counting_semaphore;
 	static SemaphoreHandle_t m_i2c_mutexes[I2C_NUM_MAX];
 
-	static void lock(uart_port_t i2c_num);
-	static void unlock(uart_port_t i2c_num);
+	static void lock(i2c_port_t i2c_num);
+	static void unlock(i2c_port_t i2c_num);
 
 };
 

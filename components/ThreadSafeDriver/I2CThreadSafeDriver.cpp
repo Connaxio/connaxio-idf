@@ -5,7 +5,7 @@
  *      Author: ma-lalonde
  */
 
-#include "include/I2CThreadSafeDriver.hpp"
+#include "I2CThreadSafeDriver.hpp"
 
 #include "esp_log.h"
 
@@ -14,7 +14,7 @@
 SemaphoreHandle_t I2CThreadSafeDriver::m_counting_semaphore = xSemaphoreCreateCounting(0xFFFFFFFF, 0);
 SemaphoreHandle_t I2CThreadSafeDriver::m_i2c_mutexes[I2C_NUM_MAX];
 
-I2CThreadSafeDriver::I2CThreadSafeDriver(i2c_config_t i2c_config, uint8_t i2c_num, uint8_t timeout_ms) :
+I2CThreadSafeDriver::I2CThreadSafeDriver(i2c_config_t i2c_config, i2c_port_t i2c_num, uint8_t timeout_ms) :
 		m_conf(i2c_config), m_i2c_num(i2c_num) {
 
 	setTimeout_ms(timeout_ms);
@@ -98,11 +98,11 @@ void I2CThreadSafeDriver::setTimeout_ms(uint8_t timeout_ms) {
 	}
 }
 
-void I2CThreadSafeDriver::lock(uart_port_t i2cNum) {
-	xSemaphoreTake(I2CThreadSafeDriver::m_i2c_mutexes[i2cNum], portMAX_DELAY);
+void I2CThreadSafeDriver::lock(i2c_port_t i2c_num) {
+	xSemaphoreTake(I2CThreadSafeDriver::m_i2c_mutexes[i2c_num], portMAX_DELAY);
 }
 
-void I2CThreadSafeDriver::unlock(uart_port_t i2cNum) {
-	xSemaphoreGive(I2CThreadSafeDriver::m_i2c_mutexes[i2cNum]);
+void I2CThreadSafeDriver::unlock(i2c_port_t i2c_num) {
+	xSemaphoreGive(I2CThreadSafeDriver::m_i2c_mutexes[i2c_num]);
 }
 

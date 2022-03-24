@@ -134,7 +134,8 @@ esp_err_t ADS1119::updateChannel(uint8_t channel) {
                 vTaskDelay(pdMS_TO_TICKS(1));
 
                 /* Read status register until data is ready */
-                for (uint8_t j = 0; j < 10 && (readout[0] & 0x80) == 0; ++j) {
+                for (uint8_t j = 0; j < 50 && (readout[0] & 0x80) == 0; ++j) {
+                	taskYIELD();
                     if (err == ESP_OK) {
                         err = i2c_desc->write(&ADS1119::m_cmd_rreg_status, 1);
 
@@ -143,6 +144,7 @@ esp_err_t ADS1119::updateChannel(uint8_t channel) {
                         }
                     }
                 }
+
                 /* Verify that there was valid data to read */
                 if ((readout[0] & 0x80) == 0) {
                     err = ESP_ERR_NOT_FINISHED;
@@ -165,7 +167,7 @@ esp_err_t ADS1119::updateChannel(uint8_t channel) {
 
     /* Update correct value field */
     if (err == ESP_OK) {
-        uint16_t value = (readout[0] << 8) + readout[1];
+        int16_t value = (readout[0] << 8) + readout[1];
         float voltage = value * 2048.0f / 32768.0f;
 
         if (channel == 0) {
