@@ -20,13 +20,14 @@
 class UARTThreadSafeDriver {
 public:
 	UARTThreadSafeDriver(uart_config_t config, uart_port_t uart_num, gpio_num_t tx_io_num,
-			gpio_num_t rx_io_num, gpio_num_t cts_io_num = (gpio_num_t) UART_PIN_NO_CHANGE, gpio_num_t rts_io_num =
-					(gpio_num_t) UART_PIN_NO_CHANGE, uint8_t timeout_ms = 10);
+			gpio_num_t rx_io_num, gpio_num_t cts_io_num = (gpio_num_t) UART_PIN_NO_CHANGE,
+			gpio_num_t rts_io_num = (gpio_num_t) UART_PIN_NO_CHANGE, uint8_t timeout_ms = 10);
 	~UARTThreadSafeDriver();
 
 	esp_err_t write(const uint8_t data[], size_t length);
-	esp_err_t read(uint8_t buffer[], size_t length);
-	esp_err_t poll(const uint8_t write_data[], size_t write_length, uint8_t read_buffer[], size_t read_length);
+	// esp_err_t read(uint8_t buffer[], size_t length);
+	esp_err_t poll(const uint8_t write_data[], size_t write_length, uint8_t read_buffer[],
+			size_t read_length);
 
 	uart_port_t getPort();
 	esp_err_t setBaudrate(uint32_t baudrate);
@@ -43,9 +44,7 @@ private:
 	gpio_num_t m_rts_io_num;
 	uint8_t m_timeout_ticks;
 
-	static QueueHandle_t m_uart_queue_handle;
-
-	static SemaphoreHandle_t m_countingSemaphore;
+	static SemaphoreHandle_t m_counting_semaphore;
 	static SemaphoreHandle_t m_uart_mutexes[UART_NUM_MAX];
 
 	static void lock(uart_port_t uart_num);

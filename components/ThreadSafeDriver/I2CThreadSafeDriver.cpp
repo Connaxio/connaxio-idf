@@ -1,5 +1,5 @@
 /*
- * ThreadSafeI2CDriver.cpp
+ * I2CThreadSafeDriver.cpp
  *
  *  Created on: Mar. 22, 2022
  *      Author: ma-lalonde
@@ -19,29 +19,21 @@ I2CThreadSafeDriver::I2CThreadSafeDriver(i2c_config_t i2c_config, i2c_port_t i2c
 
 	setTimeout_ms(timeout_ms);
 
-	I2CThreadSafeDriver::lock(0);
-
 	if (uxSemaphoreGetCount(I2CThreadSafeDriver::m_counting_semaphore) == 0) {
 		for (uint8_t i = 0; i < I2C_NUM_MAX; ++i) {
 			I2CThreadSafeDriver::m_i2c_mutexes[i] = xSemaphoreCreateMutex();
 		}
 	}
 	xSemaphoreGive(I2CThreadSafeDriver::m_counting_semaphore);
-
-	I2CThreadSafeDriver::unlock(0);
 }
 
 I2CThreadSafeDriver::~I2CThreadSafeDriver() {
-	I2CThreadSafeDriver::lock(0);
-
 	xSemaphoreTake(I2CThreadSafeDriver::m_counting_semaphore, 0);
 	if (uxSemaphoreGetCount(I2CThreadSafeDriver::m_counting_semaphore) == 0) {
 		for (uint8_t i = 0; i < I2C_NUM_MAX; ++i) {
 			vSemaphoreDelete(I2CThreadSafeDriver::m_i2c_mutexes[i]);
 		}
 	}
-
-	I2CThreadSafeDriver::unlock(0);
 }
 
 esp_err_t I2CThreadSafeDriver::masterWrite(const uint8_t address, const uint8_t data[], size_t length) {

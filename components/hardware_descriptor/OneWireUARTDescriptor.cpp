@@ -41,8 +41,7 @@ OneWireUARTDescriptor::OneWireUARTDescriptor(gpio_num_t t_tx_gpio_num, gpio_num_
 	uart_config_t t_uart_config = { // @suppress("Invalid arguments")
 			.baud_rate = 115200,
 			.data_bits = UART_DATA_8_BITS,
-			.parity =
-			UART_PARITY_DISABLE,
+			.parity = UART_PARITY_DISABLE,
 			.stop_bits = UART_STOP_BITS_1,
 			.flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
 			.rx_flow_ctrl_thresh = 122,
