@@ -60,7 +60,7 @@ esp_err_t CapacitiveMoistureSensor::update() {
 	uint32_t voltage_mv = esp_adc_cal_raw_to_voltage(adc_raw, &m_adc_chars);
 	ESP_LOGD(LOG_TAG, "ADC voltage (mv):\t%i", voltage_mv);
 
-	m_moisture_pct = m_moisture_coeff_1 * pow(voltage_mv / 1000, -m_moisture_calibration_factor)
+	m_moisture_pct = m_moisture_coeff_1 * pow(1.0f * voltage_mv / 1000.0f, -m_moisture_calibration_factor)
 			+ m_moisture_coeff_0;
 
 	return err;

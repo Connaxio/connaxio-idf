@@ -54,17 +54,17 @@ void app_main(void) {
 
 	while (true) {
 		ds18b20->update();
-		printf("Temperature:\t%.02f degC.\r\n", ds18b20->getTemperature_celsius());
+		printf("Temperature:\t%.02f C.\r\n", ds18b20->getTemperature_celsius());
 
 		ds18b20->startConversion();
 		vTaskDelay(pdMS_TO_TICKS(752 >> (12 - resolution_bits)));
-		printf("Temperature:\t%.02f degC.\r\n", ds18b20->getTemperature_celsius());
+		printf("Temperature:\t%.02f C.\r\n", ds18b20->getTemperature_celsius());
 
 		ds18b20->startConversionAll();
 		vTaskDelay(pdMS_TO_TICKS(752 >> (12 - resolution_bits)));
-		printf("Temperature:\t%.02f degC.\r\n", ds18b20->getTemperature_celsius());
+		printf("Temperature:\t%.02f C.\r\n", ds18b20->getTemperature_celsius());
 	}
 	// Should not reach here
-	delete (ds18b20);
+	delete ds18b20;
 }
 

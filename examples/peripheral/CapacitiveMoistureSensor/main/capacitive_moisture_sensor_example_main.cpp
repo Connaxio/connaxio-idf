@@ -10,9 +10,8 @@ extern "C" {
 void app_main(void);
 }
 
-// Specific confiuration for Espoir IO One HAT Rev 0.3.3
+// Specific configuration for Espoir IO One HAT Rev 0.3.3
 void configureIOs() {
-
 	// Enable power for the target connector
 	gpio_config_t gpio_conf = {
 			.pin_bit_mask = (1ULL << GPIO_NUM_5),
@@ -40,8 +39,8 @@ void app_main(void) {
 	while (true) {
 		moisture_sensor->update();
 		printf("Moisture:\t%.02f %%.\r\n", moisture_sensor->getMoisture_pct());
-		vTaskDelay(pdMS_TO_TICKS(500));
+		vTaskDelay(pdMS_TO_TICKS(1000));
 	}
 	// Should not reach here
-	delete (moisture_sensor);
+	delete moisture_sensor;
 }

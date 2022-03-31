@@ -53,7 +53,7 @@ OneWireUARTThreadSafeDriver::OneWireUARTThreadSafeDriver(gpio_num_t tx_io_num, g
 }
 
 OneWireUARTThreadSafeDriver::~OneWireUARTThreadSafeDriver() {
-	delete (m_uart_driver);
+	delete m_uart_driver;
 }
 
 uint8_t OneWireUARTThreadSafeDriver::computeCRC8(unsigned char data_in, unsigned char seed) {
