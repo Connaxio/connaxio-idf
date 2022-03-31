@@ -32,6 +32,7 @@ private:
 	OneWireUARTThreadSafeDriver *m_ow_driver;
 	float m_temperature_celsius;
 	uint8_t m_resolution_bits;
+	bool m_initialized;
 
 	esp_err_t setResolution();
 };

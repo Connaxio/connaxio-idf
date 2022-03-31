@@ -15,7 +15,9 @@ extern "C" {
 void app_main(void);
 }
 
-void app_main(void) {
+// Specific confiuration for Espoir IO One HAT Rev 0.3.3
+void configureIOs() {
+
 	// Enable power for the target connector
 	gpio_config_t gpio_conf = {
 			.pin_bit_mask = (1ULL << GPIO_NUM_5),
@@ -24,8 +26,11 @@ void app_main(void) {
 			.pull_down_en = GPIO_PULLDOWN_DISABLE,
 			.intr_type = GPIO_INTR_DISABLE };
 	gpio_config(&gpio_conf);
-
 	gpio_set_level(GPIO_NUM_5, 0);
+}
+
+void app_main(void) {
+	configureIOs();
 
 	// Create a OneWireUARTThreadSafeDriver to explore the bus devices.
 	OneWireUARTThreadSafeDriver *ow_driver = new OneWireUARTThreadSafeDriver(GPIO_NUM_9, GPIO_NUM_10);
@@ -48,17 +53,18 @@ void app_main(void) {
 	ds18b20->initialize();
 
 	while (true) {
-		printf("DS18B20 update:\t\t\t%s\r\n", esp_err_to_name(ds18b20->update()));
-		printf("Temperature:\t\t\t%.02f degC.\r\n", ds18b20->getTemperature_celsius());
+		ds18b20->update();
+		printf("Temperature:\t%.02f degC.\r\n", ds18b20->getTemperature_celsius());
 
-		printf("DS18B20 start conversion:\t%s\r\n", esp_err_to_name(ds18b20->startConversion()));
+		ds18b20->startConversion();
 		vTaskDelay(pdMS_TO_TICKS(752 >> (12 - resolution_bits)));
-		printf("Temperature:\t\t\t%.02f degC.\r\n", ds18b20->getTemperature_celsius());
+		printf("Temperature:\t%.02f degC.\r\n", ds18b20->getTemperature_celsius());
 
-		printf("DS18B20 start all conversions:\t%s\r\n", esp_err_to_name(ds18b20->startConversionAll()));
+		ds18b20->startConversionAll();
 		vTaskDelay(pdMS_TO_TICKS(752 >> (12 - resolution_bits)));
-		printf("Temperature:\t\t\t%.02f degC.\r\n", ds18b20->getTemperature_celsius());
+		printf("Temperature:\t%.02f degC.\r\n", ds18b20->getTemperature_celsius());
 	}
-
+	// Should not reach here
+	delete (ds18b20);
 }
 
