@@ -14,20 +14,18 @@ void app_main(void);
 void configureIOs() {
 	// Enable power for the target connector
 	gpio_config_t gpio_conf = {
-			.pin_bit_mask = (1ULL << GPIO_NUM_5),
+			.pin_bit_mask = (1ULL << GPIO_NUM_12),
 			.mode = GPIO_MODE_OUTPUT_OD,
 			.pull_up_en = GPIO_PULLUP_DISABLE,
 			.pull_down_en = GPIO_PULLDOWN_DISABLE,
 			.intr_type = GPIO_INTR_DISABLE };
 	gpio_config(&gpio_conf);
-	gpio_set_level(GPIO_NUM_5, 0);
+	gpio_set_level(GPIO_NUM_12, 0);
 
 	gpio_conf.mode = GPIO_MODE_DISABLE;
-	gpio_conf.pin_bit_mask = (1ULL << GPIO_NUM_10);
+	gpio_conf.pin_bit_mask = (1ULL << GPIO_NUM_13);
 	gpio_config(&gpio_conf);
 
-	gpio_conf.pin_bit_mask = (1ULL << GPIO_NUM_9);
-	gpio_config(&gpio_conf);
 }
 
 void app_main(void) {

@@ -15,29 +15,13 @@ extern "C" {
 void app_main(void);
 }
 
-// Specific confiuration for Espoir IO One HAT Rev 0.3.3
-void configureIOs() {
-
-	// Enable power for the target connector
-	gpio_config_t gpio_conf = {
-			.pin_bit_mask = (1ULL << GPIO_NUM_5),
-			.mode = GPIO_MODE_OUTPUT_OD,
-			.pull_up_en = GPIO_PULLUP_DISABLE,
-			.pull_down_en = GPIO_PULLDOWN_DISABLE,
-			.intr_type = GPIO_INTR_DISABLE };
-	gpio_config(&gpio_conf);
-	gpio_set_level(GPIO_NUM_5, 0);
-}
-
 void app_main(void) {
-	configureIOs();
-
 	// Create a OneWireUARTThreadSafeDriver to explore the bus devices.
-	OneWireUARTThreadSafeDriver *ow_driver = new OneWireUARTThreadSafeDriver(GPIO_NUM_9, GPIO_NUM_10);
+	OneWireUARTThreadSafeDriver *ow_driver = new OneWireUARTThreadSafeDriver(GPIO_NUM_10, GPIO_NUM_9);
 	std::vector<std::array<uint8_t, 8>> addresses;
-	// Use the driver to search the bus.
+	// Use the driver to search the bus and find all 1-wire devices.
 	ow_driver->searchBus(addresses);
-	// Find the first DS18B20 on the bus.
+	// Find the first DS18B20 on the bus (2nd parameter).
 	std::array<uint8_t, 8> address = ow_driver->findFamilyDevice(DS18B20_FAMILY_ID, 0, addresses);
 	// Delete the initial driver, we no longer need it.
 	delete (ow_driver);
@@ -49,7 +33,7 @@ void app_main(void) {
 	}
 
 	uint8_t resolution_bits = 11;
-	DS18B20_UART *ds18b20 = new DS18B20_UART(GPIO_NUM_9, GPIO_NUM_10, address, resolution_bits);
+	DS18B20_UART *ds18b20 = new DS18B20_UART(GPIO_NUM_10, GPIO_NUM_9, address, resolution_bits);
 	ds18b20->initialize();
 
 	while (true) {

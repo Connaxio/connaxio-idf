@@ -40,7 +40,7 @@ ADS1119::ADS1119(std::string t_name, gpio_num_t t_sda_gpio_num, gpio_num_t t_scl
     m_values[TOPIC_CH1] = NAN;
     m_values[TOPIC_CH2] = NAN;
     m_values[TOPIC_CH3] = NAN;
-    m_hardware_descriptor = new I2CDescriptor(t_sda_gpio_num, t_scl_gpio_num, 1000000, ADS1119_I2C_NUM,
+    m_hardware_descriptor = new I2CDescriptor(t_sda_gpio_num, t_scl_gpio_num, 400000, ADS1119_I2C_NUM,
             m_address);
 
 }

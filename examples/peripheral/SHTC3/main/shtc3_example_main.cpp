@@ -11,7 +11,7 @@ void app_main(void);
 }
 
 void app_main(void) {
-	SHTC3 *shtc3 = new SHTC3(GPIO_NUM_18, GPIO_NUM_23);
+	SHTC3 *shtc3 = new SHTC3(GPIO_NUM_23, GPIO_NUM_18);
 
 	while (true) {
 		shtc3->update();

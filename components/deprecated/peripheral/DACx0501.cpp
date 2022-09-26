@@ -27,7 +27,7 @@ DACx0501::DACx0501(std::string t_name, gpio_num_t t_sda_gpio_num, gpio_num_t t_s
         gpio_num_t t_enable_pin, uint16_t t_turn_on_time_ms, uint8_t t_enable_level) :
         Peripheral(t_name, t_enable_pin, t_turn_on_time_ms, t_enable_level), Actuator(t_name, t_enable_pin,
                 t_turn_on_time_ms, t_enable_level) {
-    m_hardware_descriptor = new I2CDescriptor(t_sda_gpio_num, t_scl_gpio_num, 1000000, DACx0501_I2C_NUM,
+    m_hardware_descriptor = new I2CDescriptor(t_sda_gpio_num, t_scl_gpio_num, 400000, DACx0501_I2C_NUM,
             m_address);
 
 }
